@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
+  final int days = 30;
+  final String name = "Hanif";
   @override
   Widget build(BuildContext context) {
-    int days = 30;
+    
     return MaterialApp(
-      home: Material(
-        child: Center(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Catalog App"),
+          centerTitle: true,
+        ),
+        body: Center(
           child: Container(
-            child: Text("Welcome to $days of course"),
+            child: Text("Welcome to $days days of course with $name"),
           ),
         ),
+        drawer: Drawer(),
       ),
     );
   }
