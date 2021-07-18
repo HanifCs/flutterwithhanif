@@ -4,9 +4,7 @@ import 'package:my_fourteenth_app/pages/login_page.dart';
 import 'package:my_fourteenth_app/utils/routes.dart';
 import 'package:my_fourteenth_app/widget/theme.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
