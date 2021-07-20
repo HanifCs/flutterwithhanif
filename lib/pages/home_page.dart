@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:my_fourteenth_app/models/catalog.dart';
 import 'package:my_fourteenth_app/widget/drawer.dart';
 import 'package:my_fourteenth_app/widget/item_widget.dart';
+import 'package:my_fourteenth_app/widget/theme.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -38,64 +40,111 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Catalog App"),
-        centerTitle: true,
-      ),
-      body: Center(
+      backgroundColor: MyTheme.creamColor,
+      body: SafeArea(
         child: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: (CatalogModel.items.isNotEmpty)
-                ? GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                    ),
-                    itemBuilder: (context, index) {
-                      final item = CatalogModel.items[index];
-                      return Card(
-                          clipBehavior: Clip.antiAlias,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: GridTile(
-                            child: Image.network(item.image),
-                            header: Container(
-                              child: Text(
-                                item.name,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                color: Colors.deepPurple,
-                              ),
-                            ),
-                            footer: Container(
-                              child: Text(
-                                item.price.toString(),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                              ),
-                            ),
-                          ));
-                    },
-                    itemCount: CatalogModel.items.length,
-                  )
-                : Center(
-                    child: CircularProgressIndicator(),
-                  ),
+          padding: Vx.m32,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CatalogHeader(),
+              if (CatalogModel.items.isNotEmpty)
+                CatalogList().expand()
+              else
+                Center(
+                  child: CircularProgressIndicator(),
+                )
+            ],
           ),
         ),
       ),
-      drawer: MyDrawer(),
     );
+  }
+}
+
+class CatalogHeader extends StatelessWidget {
+  const CatalogHeader({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        "Catalog App".text.xl5.bold.color(MyTheme.darkBlueshColor).make(),
+        "Trending Products".text.xl2.make(),
+      ],
+    );
+  }
+}
+
+class CatalogList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        final catalog = CatalogModel.items[index];
+        return CatalogItem(catalog: catalog);
+      },
+      itemCount: CatalogModel.items.length,
+    );
+  }
+}
+
+class CatalogItem extends StatelessWidget {
+  final Item catalog;
+
+  const CatalogItem({Key? key, required this.catalog}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return VxBox(
+      child: Row(
+        children: [
+          CatalogImage(image: catalog.image),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                catalog.name.text.color(MyTheme.darkBlueshColor).lg.bold.make(),
+                catalog.desc.text.textStyle(context.captionStyle!).make(),
+                10.heightBox,
+                ButtonBar(
+                  alignment: MainAxisAlignment.spaceBetween,
+                  buttonPadding: EdgeInsets.zero,
+                  children: [
+                    "\$ ${catalog.price}".text.bold.xl.make(),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(MyTheme.darkBlueshColor),
+                        shape: MaterialStateProperty.all(
+                          StadiumBorder(),
+                        ),
+                      ),
+                      child: "Buy".text.make(),
+                    )
+                  ],
+                ).pOnly(right: 8.0)
+              ],
+            ),
+          )
+        ],
+      ),
+    ).white.rounded.p8.square(150).make().py16();
+  }
+}
+
+class CatalogImage extends StatelessWidget {
+  final String image;
+
+  const CatalogImage({Key? key, required this.image}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      image,
+    ).box.rounded.color(MyTheme.creamColor).make().p16().w40(context);
   }
 }
